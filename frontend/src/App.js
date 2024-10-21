@@ -81,16 +81,29 @@ const startRecording = async () => {
 };
 
 
-const saveRecording = () => {
+const saveRecording = async () => {
   if (audioDownloadLink) {
+    const blob = await fetch(audioDownloadLink).then(res => res.blob());  // Fetch the audio Blob
 
-    const a = document.createElement("a");
-    a.style.display = "none";
-    a.href = audioDownloadLink;
-    a.download = "recording.webm";  
-    
-    a.click(); // triggers download
-    window.URL.revokeObjectURL(audioDownloadLink);  //free resources
+    const formData = new FormData();
+    formData.append('file', blob, 'recording.webm');  // Append the file as 'file'
+
+    // Send the form data to the backend
+    try {
+      const response = await fetch('http://127.0.0.1:8000/upload-audio/', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('File uploaded successfully:', data.file_url);
+      } else {
+        console.error('File upload failed.');
+      }
+    } catch (error) {
+      console.error('Error uploading file:', error);
+    }
   } else {
     console.error("No recording available to save.");
   }

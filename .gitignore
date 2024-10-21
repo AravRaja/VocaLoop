@@ -1,0 +1,15 @@
+# Ignore media files
+/media/
+*.webm
+
+# Python
+*.pyc
+__pycache__/
+
+# Virtual environments
+env/
+venv/
+
+# Django specific
+*.log
+*.sqlite3

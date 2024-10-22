@@ -27,15 +27,15 @@ def get_amplitude_per_frame(y, onset_frames, frame_size=512):
 def detect_onsets(y, sr, onset_threshold =0.2):
 
 
-    #compute the onset strength envelope
+#compute the onset strength envelope
     onset_env = librosa.onset.onset_strength(y=y, sr=sr)
 
-    #detects the onsets and returns the frame numbers
+#detects the onsets and returns the frame numbers
     onset_frames = librosa.onset.onset_detect(onset_envelope=onset_env, sr=sr,  delta = onset_threshold, pre_avg=20, post_avg=20)
 
     total_duration_frames = len(onset_env)
 
-    # make a threshold  to discard late onsets for last bit of recording
+# make a threshold  to discard late onsets for last bit of recording
     threshold_frames = total_duration_frames * 0.95
 
 
@@ -86,7 +86,7 @@ def detect_offsets(y, sr, onset_frames, offset_threshold=0.2):
 def get_note_lengths( onset_times, offset_times):
     return np.array(offset_times) - np.array(onset_times)
 
-def generate_note_sequence(audio_file):
+def generate_onset_offset(audio_file):
     # Load the audio file
     y, sr = librosa.load(audio_file)
     duration = 0.1  
@@ -103,12 +103,5 @@ def generate_note_sequence(audio_file):
     # Calculate note lengths
     note_lengths = get_note_lengths(onset_times, offset_times)
     # Create a list of dictionaries for each note
-    note_sequence = []
-    for i in range(len(onset_times)):
-        note_sequence.append({
-            "onset_time": onset_times[i],
-            "offset_time": offset_times[i],
-            "length": note_lengths[i]
-        })
 
-    return note_sequence
+    return onset_times, offset_times

@@ -31,7 +31,7 @@ def detect_onsets(y, sr, onset_threshold =0.2):
     onset_env = librosa.onset.onset_strength(y=y, sr=sr)
 
     #detects the onsets and returns the frame numbers
-    onset_frames = librosa.onset.onset_detect(onset_envelope=onset_env, sr=sr,  delta = onset_threshold)
+    onset_frames = librosa.onset.onset_detect(onset_envelope=onset_env, sr=sr,  delta = onset_threshold, pre_avg=20, post_avg=20)
 
     total_duration_frames = len(onset_env)
 
@@ -41,7 +41,7 @@ def detect_onsets(y, sr, onset_threshold =0.2):
 
     
     onset_amplitudes = get_amplitude_per_frame(y, onset_frames)
-    onset_frames = [onset_frames[i] for i in range(len(onset_frames)) if onset_frames[i] < threshold_frames and onset_amplitudes[i] > 0.02]
+    onset_frames = [onset_frames[i] for i in range(len(onset_frames)) if onset_frames[i] < threshold_frames and onset_amplitudes[i] > 0.03]
     onset_times = librosa.frames_to_time(onset_frames, sr=sr)
     
     return onset_frames, onset_times
@@ -85,3 +85,30 @@ def detect_offsets(y, sr, onset_frames, offset_threshold=0.2):
 
 def get_note_lengths( onset_times, offset_times):
     return np.array(offset_times) - np.array(onset_times)
+
+def generate_note_sequence(audio_file):
+    # Load the audio file
+    y, sr = librosa.load(audio_file)
+    duration = 0.1  
+    padding = np.zeros(int(duration * sr))
+    y = np.concatenate([padding, y])
+
+    # Detect onsets
+    onset_frames, onset_times = detect_onsets(y, sr,onset_threshold=0.15)
+
+    # Detect offsets
+    offset_times = detect_offsets(y, sr, onset_frames, offset_threshold=0.01)
+    onset_times = onset_times - duration
+    offset_times = offset_times - duration
+    # Calculate note lengths
+    note_lengths = get_note_lengths(onset_times, offset_times)
+    # Create a list of dictionaries for each note
+    note_sequence = []
+    for i in range(len(onset_times)):
+        note_sequence.append({
+            "onset_time": onset_times[i],
+            "offset_time": offset_times[i],
+            "length": note_lengths[i]
+        })
+
+    return note_sequence

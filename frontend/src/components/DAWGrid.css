@@ -1,24 +1,23 @@
+.daw-grid-container {
+  width: 100%;       /* Take up the full width of the page */
+}
+
 .daw-grid {
-    display: grid;
-    grid-template-rows: repeat(8, 1fr); /* 8 rows */
-    gap: 4px; /* Adjust gap between cells if needed */
-    margin: 20px auto;
-    max-width: 640px;
-  }
-  
-  .daw-row {
-    display: grid;
-    grid-template-columns: repeat(16, 1fr); /* 8 columns */
-    gap: 4px; /* Adjust gap between cells if needed */
-  }
-  
-  .daw-cell {
-    width: 50px;  /* Increased square size */
-    height: 50px; /* Increased square size */
-    background-color: lightgray;
-    border: 1px solid #ddd;
-  }
-  
-  .playhead {
-    background-color: red;
-  }
+  display: grid;
+  grid-template-columns: repeat(4, 200px); /* 4 columns with a fixed width of 200px */
+  grid-template-rows: repeat(8, 1fr);      /* 8 rows */
+  gap: 1px 2px; /* Small gap between cells */
+  margin: 0 auto;   /* Horizontally center the grid */
+  max-width: 800px; /* Set a max width for the grid */
+}
+
+.daw-cell {
+  width: 200px;  /* Width of each cell */
+  height: 50px;  /* Height of each cell */
+  background-color: lightgray;
+  border: 1px solid #ddd;
+}
+
+.daw-cell:hover {
+  background-color: lightblue; /* Optional: hover effect */
+}

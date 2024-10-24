@@ -1,75 +1,66 @@
-import React, { useState } from "react";
+class Recorder {
+  constructor(bpm) {
+    this.bpm = bpm || 120;
+    this.stream = null;
+    this.recorder = null;
+    this.clickSound = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
+  }
 
-// Need to pick a better click sound
-const clickSound = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
+  async init() {
+    // Initialize the audio stream
+    this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  }
 
-const Recorder = ({ bpm }) => {
-  const [isRecording, setIsRecording] = useState(false);
-  const [isCountingDown, setIsCountingDown] = useState(false);
-  const [audioStream, setAudioStream] = useState(null);
-  const [audioDownloadLink, setAudioDownloadLink] = useState(null);
+  getBeatDuration() {
+    return (60 / this.bpm) * 1000; // ms per beat
+  }
 
-  const getBeatDuration = () => {
-    return (60 / bpm) * 1000; // ms per beat
-  };
+  async playClick() {
+    this.clickSound.currentTime = 0;
+    await this.clickSound.play();
+  }
 
-  const playClick = async () => {
-    clickSound.currentTime = 0;
-    await clickSound.play();
-  };
+  // Create a new MediaRecorder instance every time you start recording
+  async start() {
+    console.log("Recording started!!!!!!!");
 
-  const startCountdown = () => {
-    setIsCountingDown(true);
-    const beatDuration = getBeatDuration();
-    let beatCount = 0;
+      this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
-    const clickInterval = setInterval(async () => {
-      if (beatCount >= 4) {
-        clearInterval(clickInterval);
-        startRecording();
-      } else {
-        await playClick();  // Play the click sound
-        beatCount += 1;
-      }
-    }, beatDuration);
-  };
+      this.recorder = new MediaRecorder(this.stream, { mimeType: "audio/webm" });
+      this.recorder.start();
+      const chunks = [];
 
-  const startRecording = async () => {
-    setIsCountingDown(false);
-    setIsRecording(true);
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    setAudioStream(stream);
+      this.recorder.ondataavailable = (e) => {
+        chunks.push(e.data);
+      };
 
-    const recorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
-    const chunks = [];
+      this.recorder.onstop = () => {
+        console.log("Recording stopped. Total chunks captured:", chunks.length);
 
-    recorder.onstop = () => {
-      console.log("Recording stopped. Total chunks captured:", chunks.length);
-      setIsRecording(false);
-      if (audioStream) {
-        audioStream.getTracks().forEach(track => track.stop());
-      }
+        if (this.stream) {
+          this.stream.getTracks().forEach(track => track.stop()); // Stop the audio stream
+          console.log("Audio stream stopped.");
+        }
 
-      const blob = new Blob(chunks, { type: recorder.mimeType });
-      const audioURL = window.URL.createObjectURL(blob);
-      setAudioDownloadLink(audioURL);
-    };
+        const blob = new Blob(chunks, { type: this.recorder.mimeType });
+        this.audioDownloadLink = window.URL.createObjectURL(blob);
+      };
 
-    recorder.ondataavailable = (e) => {
-      chunks.push(e.data);
-    };
+      // Start the recording
+      
+    
+  }
 
-    recorder.start();
+  stop() {
+    if (this.recorder && this.recorder.state === "recording") {
+      console.log("Recording stopped!!!!!!!");
+      this.recorder.stop(); // Stop recording
+    }
+  }
 
-    const beatDuration = getBeatDuration();
-    setTimeout(() => {
-      recorder.stop();
-    }, 4 * beatDuration);
-  };
-
-  const saveRecording = async () => {
-    if (audioDownloadLink) {
-      const blob = await fetch(audioDownloadLink).then(res => res.blob());
+  async sendToBackend() {
+    if (this.audioDownloadLink) {
+      const blob = await fetch(this.audioDownloadLink).then(res => res.blob());
 
       const formData = new FormData();
       formData.append('file', blob, 'recording.webm');
@@ -92,30 +83,23 @@ const Recorder = ({ bpm }) => {
     } else {
       console.error("No recording available to save.");
     }
-  };
+  }
 
-  return (
-    <div>
-      {/* Recording Button */}
-      <div>
-        <button
-          onClick={startCountdown}
-          disabled={isRecording || isCountingDown}
-          style={{
-            backgroundColor: isRecording ? "red" : "gray",
-            color: "white",
-          }}
-        >
-          {isRecording ? "Recording..." : isCountingDown ? "Get Ready..." : "Start Recording"}
-        </button>
-      </div>
+  async countdown() {
+    const beatDuration = this.getBeatDuration();
+    let beatCount = 0;
 
-      {/* Save Recording Button */}
-      {!isRecording && audioDownloadLink && (
-        <button onClick={saveRecording}>Save Recording</button>
-      )}
-    </div>
-  );
-};
+    const clickInterval = setInterval(async () => {
+      if (beatCount >= 4) {
+        clearInterval(clickInterval);
+        console.log("Countdown finished");
+        return true;
+      } else {
+        await this.playClick();  // Play the click sound
+        beatCount += 1;
+      }
+    }, beatDuration);
+  }
+}
 
 export default Recorder;

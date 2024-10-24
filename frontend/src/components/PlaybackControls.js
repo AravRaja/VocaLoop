@@ -1,8 +1,18 @@
 import React from "react";
 
-const PlaybackControls = ({ bpm, setBpm, isPlaying, play, pause, isMetronomeOn, toggleMetronome }) => {
+function PlaybackControls ({ bpm, setBpm, isPlaying, play, pause, isMetronomeOn, toggleMetronome , isCountingDown, setIsCountingDown, setPlayheadPosition, isRecording ,setIsPlaying}) {
+  if (bpm > 80) {
+    console.log("BPM is greater than 80");
+  }
   const handleBpmChange = (event) => {
     setBpm(event.target.value);
+  };
+  const startCountdown = () => {
+    console.log("Start Countdown");
+    setIsCountingDown(true);
+    setIsPlaying(true);
+    //setPlayheadPosition(0);
+    
   };
 
   return (
@@ -20,15 +30,23 @@ const PlaybackControls = ({ bpm, setBpm, isPlaying, play, pause, isMetronomeOn, 
       </div>
 
       {/* Play/Pause Controls */}
-      <button onClick={play} disabled={isPlaying}>Play</button>
-      <button onClick={pause} disabled={!isPlaying}>Pause</button>
+      <button onClick={play} disabled={isPlaying || isRecording || isCountingDown}>Play</button>
+      <button onClick={pause} disabled={!isPlaying || isRecording || isCountingDown}>Pause</button>
 
       {/* Metronome Toggle */}
-      <div className="metronome-toggle">
-        <button onClick={toggleMetronome} >
-          {isMetronomeOn ? 'Metronome ON' : 'Metronome OFF'}
-        </button>
-      </div>
+      
+    <button onClick={toggleMetronome} > {isMetronomeOn ? 'Metronome ON' : 'Metronome OFF'} </button>
+    <button
+          onClick={startCountdown}
+          disabled={isRecording || isCountingDown}
+          style={{
+            backgroundColor: isRecording ? "red" : "gray",
+            color: "white",
+          }}
+        >
+          {isRecording ? "Recording..." : isCountingDown ? "Get Ready..." : "Start Recording"}
+    </button>
+      
     </div>
   );
 };

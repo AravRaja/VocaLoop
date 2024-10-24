@@ -1,46 +1,70 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import DAWGrid from "./components/DAWGrid";
 import PlaybackControls from "./components/PlaybackControls";
+import PlayheadBar from "./components/PlayheadBar";
 import Recorder from "./components/Recorder";
-
+import Loop from './components/ToneManager';
+import * as Tone from "tone";
+import PlayPauseButton from "./components/PlayPauseButton";
+import MetronomeButton from "./components/MetronomeButton";
+import BpmSlider from "./components/BpmSlider";
+import RecordButton from "./components/RecordButton";
+import './App.css';
 function App() {
-  const [bpm, setBpm] = useState(120); // Default BPM
+  const [bpm, setBpm] = useState(120); // Ensure bpm is initialized
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isMetronomeOn, setIsMetronomeOn] = useState(false); // State for metronome toggle
+  const [playheadPosition, setPlayheadPosition] = useState(0); // State for playhead position
+  const [isMetronomeOn, setIsMetronomeOn] = useState(true); // Metronome toggle state
+  const [isCountingDown, setIsCountingDown] = useState(false); // Recording toggle state
+  const [isRecording, setIsRecording] = useState(false); // Recording toggle state
+  const [recorder, setRecorder] = useState(null); // Recorder instance
+  const [loop, setLoop] = useState(null); // Loop instance
 
-  const play = () => {
-    setIsPlaying(true);
-  };
+  useEffect(() => {
+    console.log("Component Mounted");
+    
+    // Initialize the Tone.js audio context
+    
+    console.log("Tone.js started");
+    const newLoop = new Loop(setPlayheadPosition, 120, setIsRecording, setIsCountingDown, setIsPlaying);
+    setLoop(newLoop); // Store the loop instance in state
+    newLoop.init(); // Initialize the loop after creating it
+    
 
-  const pause = () => {
-    setIsPlaying(false);
-  };
-
-  // Toggle the metronome on or off
-  const toggleMetronome = () => {
-    setIsMetronomeOn(!isMetronomeOn);
-  };
+    // Optionally, return a cleanup function to stop Tone.js when the component unmounts
+    return () => {
+      console.log("Cleaning up");
+      setLoop(null); // Reset the loop instance
+       // Stop any ongoing Tone.js transport
+    };
+  }, []);
 
   return (
-    <div className="App">
-      <h1>DAW Interface</h1>
+    <div className="center-wrapper">
+      <h1>DAW Interface with Tone.js</h1>
 
       {/* DAW Grid with Playhead and BPM */}
-      <DAWGrid isPlaying={isPlaying} bpm={bpm} isMetronomeOn={isMetronomeOn} />
+      
+      
+      <PlayheadBar playheadPosition = {playheadPosition} setPlayheadPosition = {setPlayheadPosition} loop ={loop}/>
+      <DAWGrid playheadPosition={playheadPosition} />
 
-      {/* Playback Controls */}
-      <PlaybackControls
-        bpm={bpm}
-        setBpm={setBpm}
+      <div className="controls-wrapper">
+      <PlayPauseButton
         isPlaying={isPlaying}
-        play={play}
-        pause={pause}
-        isMetronomeOn={isMetronomeOn} // Pass metronome state
-        toggleMetronome={toggleMetronome} // Pass toggle function
+        setIsPlaying={setIsPlaying}
+        loop={loop}
+        isRecording={isRecording}
+        isCountingDown={isCountingDown}
       />
+      <MetronomeButton isMetronomeOn={isMetronomeOn} setIsMetronomeOn={setIsMetronomeOn} loop = {loop} />
+      <BpmSlider bpm={bpm} setBpm={setBpm} loop ={loop} />
+      <RecordButton isRecording={isRecording} isCountingDown= {isCountingDown} setIsCountingDown={setIsCountingDown} loop = {loop} />
+      </div>
+      {/* Playback Controls */}
 
-      {/* Recorder Component */}
-      <Recorder bpm={bpm} />
+     
+  
     </div>
   );
 }

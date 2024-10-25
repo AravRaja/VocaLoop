@@ -9,6 +9,7 @@ import PlayPauseButton from "./components/PlayPauseButton";
 import MetronomeButton from "./components/MetronomeButton";
 import BpmSlider from "./components/BpmSlider";
 import RecordButton from "./components/RecordButton";
+import ButtonColumn from "./components/ButtonColumn";
 import './App.css';
 function App() {
   const [bpm, setBpm] = useState(120); // Ensure bpm is initialized
@@ -19,6 +20,7 @@ function App() {
   const [isRecording, setIsRecording] = useState(false); // Recording toggle state
   const [recorder, setRecorder] = useState(null); // Recorder instance
   const [loop, setLoop] = useState(null); // Loop instance
+  const [selectedRow, setSelectedRow] = useState(null);
 
   useEffect(() => {
     console.log("Component Mounted");
@@ -47,7 +49,14 @@ function App() {
       
       
       <PlayheadBar playheadPosition = {playheadPosition} setPlayheadPosition = {setPlayheadPosition} loop ={loop}/>
-      <DAWGrid playheadPosition={playheadPosition} />
+      
+      
+      <div className="daw-container">
+      <ButtonColumn selectedRow={selectedRow} setSelectedRow={setSelectedRow} />
+      <DAWGrid selectedRow={selectedRow} />
+      
+      </div>
+      {/* Playback Controls */}
 
       <div className="controls-wrapper">
       <PlayPauseButton
@@ -58,8 +67,8 @@ function App() {
         isCountingDown={isCountingDown}
       />
       <MetronomeButton isMetronomeOn={isMetronomeOn} setIsMetronomeOn={setIsMetronomeOn} loop = {loop} />
-      <BpmSlider bpm={bpm} setBpm={setBpm} loop ={loop} />
       <RecordButton isRecording={isRecording} isCountingDown= {isCountingDown} setIsCountingDown={setIsCountingDown} loop = {loop} />
+      <BpmSlider bpm={bpm} setBpm={setBpm} loop ={loop} />
       </div>
       {/* Playback Controls */}
 

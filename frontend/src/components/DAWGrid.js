@@ -1,7 +1,7 @@
 import React from 'react';
 import './DAWGrid.css';
 
-const DAWGrid = () => {
+function DAWGrid() {
   const numCells = 32; // 4 columns * 8 rows = 32 total cells
 
   return (

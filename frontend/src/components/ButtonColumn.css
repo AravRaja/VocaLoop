@@ -1,0 +1,94 @@
+/* Container for the button column */
+.button-container {
+  display: flex;
+  justify-content: center; /* Center-align the button column if needed */
+   /* Space between button column and DAW grid */
+}
+
+.button-column {
+  display: grid;
+  grid-template-rows: repeat(8, 51.1px); /* 8 rows, each 50px to match DAW grid */
+  gap: 0px; /* Consistent small gap between buttons */
+}
+
+.button-square {
+  width: 51.1px;   /* Matches DAW grid cell width */
+  height: 51.1px;  /* Matches DAW grid cell height */
+  background-color: #f0f0f0;
+  border: 0.5px solid #ddd;
+  cursor: pointer;
+}
+
+.button-square.active {
+  background-color: blue; /* Highlight active square */
+}
+
+.button-square:hover {
+  background-color: lightblue; /* Optional hover effect */
+}
+
+/* Unique hover colors for each button before selection */
+.button-square:nth-child(1):hover {
+  background-color: #ffb3b3; /* Light red */
+}
+
+.button-square:nth-child(2):hover {
+  background-color: #ffd9b3; /* Light orange */
+}
+
+.button-square:nth-child(3):hover {
+  background-color: #ffffb3; /* Light yellow */
+}
+
+.button-square:nth-child(4):hover {
+  background-color: #d9ffb3; /* Light green */
+}
+
+.button-square:nth-child(5):hover {
+  background-color: #b3ffb3; /* Light mint */
+}
+
+.button-square:nth-child(6):hover {
+  background-color: #b3d9ff; /* Light blue */
+}
+
+.button-square:nth-child(7):hover {
+  background-color: #b3b3ff; /* Light purple */
+}
+
+.button-square:nth-child(8):hover {
+  background-color: #ffb3ff; /* Light pink */
+}
+
+/* Unique colors for each button when selected */
+.active-row-0 {
+  background-color: #ff9999; /* Light red */
+}
+
+.active-row-1 {
+  background-color: #ffcc99; /* Light orange */
+}
+
+.active-row-2 {
+  background-color: #ffff99; /* Light yellow */
+}
+
+.active-row-3 {
+  background-color: #ccff99; /* Light green */
+}
+
+.active-row-4 {
+  background-color: #99ff99; /* Light mint */
+}
+
+.active-row-5 {
+  background-color: #99ccff; /* Light blue */
+}
+
+.active-row-6 {
+  background-color: #9999ff; /* Light purple */
+}
+
+.active-row-7 {
+  background-color: #ff99ff; /* Light pink */
+}

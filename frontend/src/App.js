@@ -1,148 +1,79 @@
-import React, { useState} from "react";
-
-//need to pick a better click sound
-const clickSound = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
-
+import React, { useState, useRef, useEffect } from "react";
+import DAWGrid from "./components/DAWGrid";
+import PlaybackControls from "./components/PlaybackControls";
+import PlayheadBar from "./components/PlayheadBar";
+import Recorder from "./components/Recorder";
+import Loop from './components/ToneManager';
+import * as Tone from "tone";
+import PlayPauseButton from "./components/PlayPauseButton";
+import MetronomeButton from "./components/MetronomeButton";
+import BpmSlider from "./components/BpmSlider";
+import RecordButton from "./components/RecordButton";
+import ButtonColumn from "./components/ButtonColumn";
+import './App.css';
 function App() {
-  const [bpm, setBpm] = useState(120); // Default BPM
-  const [isRecording, setIsRecording] = useState(false);
-  const [isCountingDown, setIsCountingDown] = useState(false);
-  const [audioStream, setAudioStream] = useState(null); 
-  const [audioDownloadLink, setAudioDownloadLink] = useState(null);
-  
-  const handleBpmChange = (event) => {
-    setBpm(event.target.value);
-  };
-  const getBeatDuration = () => {
-    return (60 / bpm) * 1000; // ms per beat
-  };
+  const [bpm, setBpm] = useState(120); // Ensure bpm is initialized
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [playheadPosition, setPlayheadPosition] = useState(0); // State for playhead position
+  const [isMetronomeOn, setIsMetronomeOn] = useState(true); // Metronome toggle state
+  const [isCountingDown, setIsCountingDown] = useState(false); // Recording toggle state
+  const [isRecording, setIsRecording] = useState(false); // Recording toggle state
+  const [recorder, setRecorder] = useState(null); // Recorder instance
+  const [loop, setLoop] = useState(null); // Loop instance
+  const [selectedRow, setSelectedRow] = useState(null);
 
-  //needs to be awaited to play the sound
-  const playClick = async () => {
-    clickSound.currentTime = 0;
-    await clickSound.play();
-  };
+  useEffect(() => {
+    console.log("Component Mounted");
+    
+    // Initialize the Tone.js audio context
+    
+    console.log("Tone.js started");
+    const newLoop = new Loop(setPlayheadPosition, 120, setIsRecording, setIsCountingDown, setIsPlaying);
+    setLoop(newLoop); // Store the loop instance in state
+    newLoop.init(); // Initialize the loop after creating it
+    
 
-
-  const startCountdown = () => {
-    setIsCountingDown(true);
-    const beatDuration = getBeatDuration();
-    let beatCount = 0;
-
-    const clickInterval = setInterval(async () => {
-      if (beatCount >= 4) {
-        clearInterval(clickInterval);
-        startRecording();
-      }
-      else{
-
-      await playClick();  // Play the click sound
-      beatCount += 1;
-    }
-
-    }, beatDuration);  
-  };
-
-
-
-const startRecording = async () => {
-  setIsCountingDown(false);
-  setIsRecording(true);
-  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  setAudioStream(stream); 
-
-  const recorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
-  const chunks = [];
-  
-  recorder.onstop = () => {
-    console.log("Recording stopped. Total chunks captured:", chunks.length);
-    setIsRecording(false);
-    if (audioStream) {
-      audioStream.getTracks().forEach(track => track.stop()); 
-    }
-
-    const blob = new Blob(chunks, { type: recorder.mimeType });
-    const audioURL = window.URL.createObjectURL(blob);
-    setAudioDownloadLink(audioURL);
-  };
-
-  recorder.ondataavailable = (e) => {
-    chunks.push(e.data);
-  };
-
-  recorder.start();
-
-  //stops recording after 4 beats
-  const beatDuration = getBeatDuration();
-  setTimeout(() => {
-    recorder.stop();
-  }, 4 * beatDuration);
-
-};
-
-
-const saveRecording = async () => {
-  if (audioDownloadLink) {
-    const blob = await fetch(audioDownloadLink).then(res => res.blob());  // Fetch the audio Blob
-
-    const formData = new FormData();
-    formData.append('file', blob, 'recording.webm');  // Append the file as 'file'
-
-    // Send the form data to the backend
-    try {
-      const response = await fetch('http://127.0.0.1:8000/upload-audio/', {
-        method: 'POST',
-        body: formData,
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        console.log('File uploaded successfully:', data.file_url);
-      } else {
-        console.error('File upload failed.');
-      }
-    } catch (error) {
-      console.error('Error uploading file:', error);
-    }
-  } else {
-    console.error("No recording available to save.");
-  }
-};
+    // Optionally, return a cleanup function to stop Tone.js when the component unmounts
+    return () => {
+      console.log("Cleaning up");
+      setLoop(null); // Reset the loop instance
+       // Stop any ongoing Tone.js transport
+    };
+  }, []);
 
   return (
-    <div className="App">
-      <h1>BPM: {bpm}</h1>
+    <div className="center-wrapper">
+      <h1>DAW Interface with Tone.js</h1>
 
-      {/* BPM Slider */}
-      <div>
-        <label>Set BPM: {bpm}</label>
-        <input
-          type="range"
-          min="30"
-          max="240"
-          value={bpm}
-          onChange={handleBpmChange}
-        />
+      {/* DAW Grid with Playhead and BPM */}
+      
+      
+      <PlayheadBar playheadPosition = {playheadPosition} setPlayheadPosition = {setPlayheadPosition} loop ={loop}/>
+      
+      
+      <div className="daw-container">
+      <ButtonColumn selectedRow={selectedRow} setSelectedRow={setSelectedRow} />
+      <DAWGrid selectedRow={selectedRow} />
+      
       </div>
+      {/* Playback Controls */}
 
-      {/* Recording Button */}
-      <div>
-        <button
-          onClick={startCountdown}
-          disabled={isRecording || isCountingDown}
-          style={{
-            backgroundColor: isRecording ? "red" : "gray",
-            color: "white",
-          }}
-        >
-          {isRecording ? "Recording..." : isCountingDown ? "Get Ready..." : "Start Recording"}
-        </button>
+      <div className="controls-wrapper">
+      <PlayPauseButton
+        isPlaying={isPlaying}
+        setIsPlaying={setIsPlaying}
+        loop={loop}
+        isRecording={isRecording}
+        isCountingDown={isCountingDown}
+      />
+      <MetronomeButton isMetronomeOn={isMetronomeOn} setIsMetronomeOn={setIsMetronomeOn} loop = {loop} />
+      <RecordButton isRecording={isRecording} isCountingDown= {isCountingDown} setIsCountingDown={setIsCountingDown} loop = {loop} />
+      <BpmSlider bpm={bpm} setBpm={setBpm} loop ={loop} />
       </div>
+      {/* Playback Controls */}
 
-      {/* Save Recording Button */}
-      {!isRecording && (
-        <button onClick={saveRecording}>Save Recording</button>
-      )}
+     
+  
     </div>
   );
 }

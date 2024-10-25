@@ -1,0 +1,9 @@
+Django>=4.0,<5.0
+djangorestframework>=3.13,<4.0
+django-cors-headers>=3.13,<4.0
+python-dotenv>=0.20.0,<1.0  
+librosa>=0.9.1,<1.0       
+parselmouth>=0.4.0,<1.0  
+numpy>=1.21.2,<2.0          
+scipy>=1.7.1,<2.0           
+pydub>=0.25.1,<1.0  

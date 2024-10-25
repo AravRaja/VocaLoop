@@ -1,0 +1,31 @@
+
+.playhead-container {
+  width: 100%;       /* Take up the full width of the page */
+}
+.playhead-bar {
+
+    display: grid;
+    width: calc(50px * 16);
+    grid-template-columns: repeat(16, 50px); /* 16 squares in a row */
+    gap: 0.2px; /* Small gap between squares */
+    max-width: 800px; /* Total width of the grid */
+    margin-bottom: 1px; /* Space between the playhead bar and the grid */
+    margin-left: 49px;
+    border-radius: 10px;
+  }
+  
+  .playhead-square {
+    width: 50px;   /* Same width as your DAW grid cells */
+    height: 50px;  /* Square shape */
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    cursor: pointer;
+  }
+  
+  .playhead-square.active {
+    background-color: blue; /* Highlight active square */
+  }
+  
+  .playhead-square:hover {
+    background-color: lightblue; /* Optional hover effect */
+  }

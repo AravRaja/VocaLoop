@@ -36,3 +36,39 @@
     transform: rotate(360deg);
   }
 }
+
+.controls {
+  margin-top: 20px;
+}
+
+button {
+  margin-right: 1px;
+  padding: 10px;
+}
+
+.daw-container {
+  display: flex;
+  align-items: flex-start;
+}
+.center-wrapper {
+  display: flex;
+  flex-direction: column; /* Arrange elements vertically */
+  
+  align-items: center; /* Center horizontally */
+  height: 100vh; /* Fulls viewport height to ensure vertical centering */
+  width: 100vw; /* Full viewport width */
+  margin: 0; /* Remove default margin */
+}
+
+.controls-wrapper {
+  display: flex;              /* Use flexbox to arrange elements in a row */
+  justify-content: center;     /* Center the controls horizontally */
+  align-items: center;         /* Align controls vertically in the center */
+  gap: 2px;                   /* Add space between the buttons */
+  margin-top: 5px;            /* Add space above the controls */
+}
+
+h1 {
+  text-align: center;
+}
+

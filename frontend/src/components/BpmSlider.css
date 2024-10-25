@@ -1,0 +1,40 @@
+.bpm-slider-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    padding: 10px;
+    width: 150px;
+    max-height: 50px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin: 0;              /* Remove extra margin */
+    padding: 10px;
+     /* Add margin to ensure it's inline with other buttons */
+  }
+  
+  .bpm-value {
+    font-size: 18px;
+    margin-left: 10px; /* Spacing between the slider and the number */
+  }
+  
+  .bpm-slider {
+    width: 100px;
+    height: 30px;
+    background-color: transparent;
+    border-radius: 5px;
+  }
+  
+  .bpm-slider::-webkit-slider-thumb {
+    width: 20px;
+    height: 20px;
+    background-color: #333;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  
+  .bpm-slider-container:hover {
+    background-color: #ddd;
+  }

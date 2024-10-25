@@ -1,0 +1,26 @@
+.daw-grid-container {
+  width: 100%;
+  display: flex;
+  justify-content: center; /* Center grid within container */
+}
+
+.daw-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 200px); /* 4 columns, each 200px wide */
+  grid-template-rows: repeat(8, 50px);     /* 8 rows, each 50px high */
+  gap: 1px; /* Consistent gap between cells */
+  border-radius: 10px;
+}
+
+.daw-cell {
+  width: 200px;
+  height: 50px;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+}
+
+.daw-cell:hover {
+  background-color: lightblue;
+}
+
+

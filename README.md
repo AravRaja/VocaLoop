@@ -7,7 +7,7 @@
 - - Detects the onset and offsets of notes and then quantizes them down according to the bpm to obtain the ryhthmn of the part. 
 - - Next takes these onset and offsets and uses a pitch detection algorithm to see the average pitch at the specified time removing outliers and zero values.
 
-- **Online DAW Interface**: Provides a user-friendly, interactive DAW (Digital Audio Workstation) environment with playback controls, a playhead for visual tracking, and a customizable BPM slider as well as the ability to mute an unmute your audio parts in realtime which update the loop in Tones.js immediately.
+- **Online DAW Interface** (IN DEVELOPMENT) : Provides a user-friendly, interactive DAW (Digital Audio Workstation) environment with playback controls, a playhead for visual tracking, and a customizable BPM slider as well as the ability to mute an unmute your audio parts in realtime which update the loop in Tones.js immediately.
 
 
 ## Tech Stack
@@ -47,7 +47,7 @@
 ## Usage
 
 1. **Recording and Voice-to-MIDI**: Record vocal tracks by setting a BPM and clicking "Record." VocaLoop will count in with a metronome and automatically convert your recordings to instrument parts.
-2. **DAW Interface**: Use the DAW grid to loop and play back your tracks concurrently.
+2. **DAW Interface** (IN DEVELOPMENT) : Use the DAW grid to loop and play back your tracks concurrently.
 
 
 ## File Structure
